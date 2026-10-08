@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#08111f">
+<title>Estadísticas de Voleibol</title>
+<style>
+:root{
+ --bg:#07111f;--panel:#0d1a2b;--panel2:#122238;--line:#223550;
+ --text:#f7fbff;--muted:#9db0c8;--blue:#4f8cff;--cyan:#39d5ff;
+ --green:#28d17c;--red:#ff647c;--yellow:#ffd166;--white:#fff;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;background:#07111f}
+body{
+ margin:0;min-height:100vh;min-height:-webkit-fill-available;
+ padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right))
+          max(18px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
+ background:
+ radial-gradient(circle at 15% 0%,rgba(79,140,255,.22),transparent 32%),
+ radial-gradient(circle at 90% 10%,rgba(57,213,255,.12),transparent 28%),
+ linear-gradient(145deg,#06101d,#0a1525 48%,#07111f);
+ color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ -webkit-tap-highlight-color:transparent;
+}
+button,input,select{font:inherit}
+button,select,input{ -webkit-appearance:none;appearance:none }
+.app{max-width:760px;margin:auto;padding:10px 2px 34px}
+.hero{padding:20px 16px;margin-bottom:14px;border:1px solid rgba(120,160,210,.18);
+ border-radius:24px;background:linear-gradient(135deg,rgba(19,39,64,.96),rgba(10,26,44,.96));
+ box-shadow:0 18px 50px rgba(0,0,0,.25);text-align:center}
+.logo{font-size:40px}
+h1{font-size:28px;margin:5px 0 4px;letter-spacing:-.7px}
+.sub{color:var(--muted);font-size:14px}
+.card{background:rgba(13,26,43,.94);border:1px solid rgba(120,160,210,.15);
+ border-radius:21px;padding:15px;margin-bottom:13px;box-shadow:0 12px 35px rgba(0,0,0,.2)}
+.card h2{font-size:19px;margin:0 0 13px;display:flex;align-items:center;gap:8px}
+.label{display:block;color:#dce8f7;font-weight:700;font-size:13px;margin-bottom:7px}
+select,input{width:100%;padding:13px 14px;min-height:48px;border:1px solid var(--line);
+ border-radius:13px;background:#091626;color:var(--text);outline:none;font-size:16px}
+select:focus,input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,140,255,.15)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+button{border:1px solid var(--line);border-radius:14px;padding:13px 10px;
+ min-height:48px;color:#dce8f7;background:#122238;font-weight:800;cursor:pointer;touch-action:manipulation}
+button:active{transform:scale(.98)}
+button.selected{background:linear-gradient(135deg,var(--blue),#6b65ff);border-color:transparent;color:white}
+.register{width:100%;margin-top:12px;background:linear-gradient(135deg,#20c875,#16a86a);
+ border:0;color:#fff;font-size:17px;box-shadow:0 10px 25px rgba(40,209,124,.18)}
+.secondary{width:100%;margin-top:9px}
+.danger{background:rgba(255,100,124,.12);color:#ff9aaa;border-color:rgba(255,100,124,.25)}
+.status{text-align:center;min-height:22px;font-weight:800;margin-top:9px;font-size:13px}
+.notice{display:flex;align-items:center;justify-content:center;min-height:58px;border-radius:16px;
+ background:linear-gradient(135deg,rgba(79,140,255,.18),rgba(57,213,255,.08));
+ border:1px solid rgba(79,140,255,.22);color:#dff3ff;font-weight:900;letter-spacing:.8px}
+.sets{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:10px}
+.sets button{padding:11px 4px;min-height:48px}
+.sets button.selected{background:linear-gradient(135deg,#2f7df4,#4f5cff)}
+.small{font-size:12px;color:var(--muted);line-height:1.45}
+.addgrid{display:grid;grid-template-columns:1fr 2fr;gap:8px}
+details{border-top:1px solid var(--line);margin-top:14px;padding-top:13px}
+summary{cursor:pointer;color:#cfe1f5;font-weight:800}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.single-stat{grid-template-columns:1fr}
+.metric{background:linear-gradient(145deg,#101f33,#0b1727);border:1px solid var(--line);
+ border-radius:16px;padding:12px;text-align:center;color:var(--muted);font-size:11px}
+.metric b{display:block;color:#fff;font-size:25px;margin-bottom:2px}
+.effect{color:#71e5ad!important;font-size:22px!important}
+.section-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;
+ background:linear-gradient(135deg,#11253e,#0e1d31);margin-top:7px;text-align:left}
+.section-toggle .arrow{transition:.2s;font-size:18px}
+.section-toggle.open .arrow{transform:rotate(180deg)}
+.collapsible{display:none;margin-top:11px}
+.collapsible.open{display:block}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:15px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:650px}
+th{background:#102238;color:#aecaeb;font-weight:800;text-transform:uppercase;font-size:10px;letter-spacing:.4px}
+th,td{padding:9px 7px;border-bottom:1px solid #1c2c42;text-align:left}
+tr:last-child td{border-bottom:0}
+td{color:#e4edf7}
+.badge{display:inline-flex;padding:4px 7px;border-radius:8px;font-weight:900;font-size:11px}
+.badge.pos{background:rgba(40,209,124,.13);color:#63e59c}
+.badge.neg{background:rgba(255,100,124,.12);color:#ff8d9d}
+.badge.neutral{background:rgba(255,209,102,.12);color:#ffd166}
+.effect-pill{font-weight:900;color:#6ee7aa}
+.effect-card{width:100%;padding:16px 18px;position:relative;overflow:hidden}
+.effect-card .effect-label{display:flex;justify-content:space-between;align-items:center;
+ color:#aecaeb;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px}
+.effect-card .effect-value{font-size:36px;font-weight:900;color:#fff;line-height:1;margin-top:7px}
+.effect-track{height:10px;border-radius:999px;background:#091626;border:1px solid var(--line);
+ overflow:hidden;margin-top:13px}
+.effect-bar{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#4f8cff,#39d5ff,#28d17c);
+ transition:width .35s ease}
+.action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.action-grid button{font-size:13px}
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
+.team-manager{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:center;margin-top:8px}
+.team-manager select{min-height:44px;padding:9px}
+.team-name{font-weight:800;color:#dce8f7;font-size:13px}
+.footer-note{text-align:center;color:#71849c;font-size:11px;margin-top:8px}
+@media(max-width:600px){
+ .app{padding:8px 0 25px}.hero{padding:18px 12px;border-radius:21px}
+ h1{font-size:clamp(26px,8vw,38px);line-height:1.05}.card{padding:13px;border-radius:19px}
+ .action-grid,#actions,#ratings{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .action-grid button:last-child{grid-column:1/-1}
+ .stats{grid-template-columns:repeat(3,1fr)}
+ #actions button,#ratings button{min-height:58px;padding:10px 4px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ #register,#clear,#export{width:100%;min-height:54px}
+}
+@media(max-width:350px){.stats{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="hero">
+ <div class="logo">🏐</div>
+ <h1>Estadísticas de Voleibol</h1>
+</header>
+
+<section class="card">
+ <h2>🏆 Partido</h2>
+ <div class="notice" id="currentSet">SET 1</div>
+ <div class="sets" id="setButtons">
+  <button data-set="1">SET 1</button><button data-set="2">SET 2</button>
+  <button data-set="3">SET 3</button><button data-set="4">SET 4</button>
+  <button data-set="5">SET 5</button>
+ </div>
+</section>
+
+<section class="card">
+ <h2>👤 Jugador</h2>
+ <label class="label" for="teamFilter">Equipo</label>
+ <select id="teamFilter">
+  <option value="Equipo A">Equipo A</option>
+  <option value="Equipo B">Equipo B</option>
+ </select>
+
+ <label class="label" for="player" style="margin-top:11px">Jugador seleccionado</label>
+ <select id="player"></select>
+
+
+
+ <details>
+  <summary>➕ Añadir jugador personalizado</summary>
+  <div class="addgrid" style="margin-top:10px">
+   <input id="newJersey" type="number" min="1" max="99" placeholder="Dorsal">
+   <input id="newName" type="text" placeholder="Nombre">
+  </div>
+  <select id="newTeam" style="margin-top:8px">
+   <option value="Equipo A">Equipo A</option>
+   <option value="Equipo B">Equipo B</option>
+  </select>
+  <button class="secondary" id="addPlayer">Añadir jugador</button>
+  <div class="status" id="addStatus"></div>
+ </details>
+</section>
+
+<section class="card">
+ <h2>🎯 Registrar acción</h2>
+ <div class="action-grid" id="actions">
+  <button data-value="Recepción">👐 Recepción</button>
+  <button data-value="Colocación">🤲 Colocación</button>
+  <button data-value="Ataque">⚡ Ataque</button>
+  <button data-value="Bloqueo">🧱 Bloqueo</button>
+  <button data-value="Saque">🎯 Saque</button>
+   <button data-value="Defensa">🛡️ Defensa</button>
+ </div>
+
+ <h2 style="margin-top:18px">⭐ Resultado</h2>
+ <div class="grid" id="ratings">
+  <button data-value="++">++ Doble positiva</button>
+  <button data-value="+">+ Positiva</button>
+  <button data-value="-">− Negativa</button>
+  <button data-value="F">✕ Fallo</button>
+ </div>
+
+ <button class="register" id="register">➕ Registrar acción</button>
+ <div class="status" id="status"></div>
+</section>
+
+<section class="card">
+ <h2>📈 Resumen del set</h2>
+ <div class="stats">
+    <div class="metric effect-card"><div class="effect-label"><span>Efectividad del set</span><span>0–100%</span></div><b id="setEffectiveness" class="effect effect-value">0%</b><div class="effect-track"><div class="effect-bar" id="setEffectBar"></div></div></div>
+ </div>
+ <button class="section-toggle" data-target="setRecordsPanel">
+  <span>📋 Ver acciones del set</span><span class="arrow">⌄</span>
+ </button>
+ <div class="collapsible" id="setRecordsPanel">
+  <div class="table-wrap">
+   <table>
+    <thead><tr><th>#</th><th>Equipo</th><th>Acción</th><th>Calif.</th><th>Cant.</th></tr></thead>
+    <tbody id="records"></tbody>
+   </table>
+  </div>
+ </div>
+</section>
+
+<section class="card">
+ <h2>🏆 Estadísticas del partido</h2>
+ <div class="stats">
+    <div class="metric effect-card"><div class="effect-label"><span>Efectividad del partido</span><span>0–100%</span></div><b id="matchEffectiveness" class="effect effect-value">0%</b><div class="effect-track"><div class="effect-bar" id="matchEffectBar"></div></div></div>
+ </div>
+
+ <button class="section-toggle" data-target="playerPanel">
+  <span>👥 Estadísticas por jugador</span><span class="arrow">⌄</span>
+ </button>
+ <div class="collapsible" id="playerPanel">
+  <div class="table-wrap">
+   <table>
+    <thead><tr><th>#</th><th>Equipo</th><th>Jugador</th><th>Total</th><th>++</th><th>+</th><th>-</th><th>Fallo</th><th>Efect.</th></tr></thead>
+    <tbody id="playerSummary"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <button class="section-toggle" data-target="actionPanel">
+  <span>🏐 Estadísticas por acción</span><span class="arrow">⌄</span>
+ </button>
+ <div class="collapsible" id="actionPanel">
+  <div class="table-wrap">
+   <table>
+    <thead><tr><th>Acción</th><th>++</th><th>+</th><th>-</th><th>Fallo</th><th>Total</th><th>Efect.</th></tr></thead>
+    <tbody id="actionSummary"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <button class="section-toggle" data-target="allSetsPanel">
+  <span>📚 Resumen de todos los sets</span><span class="arrow">⌄</span>
+ </button>
+ <div class="collapsible" id="allSetsPanel">
+  <div class="table-wrap">
+   <table>
+    <thead><tr><th>Set</th><th>Efect.</th></tr></thead>
+    <tbody id="setSummary"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <button class="secondary" id="export">📥 Exportar estadísticas completas</button>
+</section>
+
+<section class="card">
+ <h2>⚙️ Datos</h2>
+ <button class="secondary danger" id="clear">🗑️ Reiniciar estadísticas del partido</button>
+</section>
+</div>
+
+<script>
+const defaultPlayers={
+  1:{name:"Cristian",team:"Equipo A"},
+  4:{name:"Abde",team:"Equipo A"},
+  6:{name:"Erik",team:"Equipo A"},
+  8:{name:"Arthur",team:"Equipo A"},
+  9:{name:"Berna",team:"Equipo A"},
+  10:{name:"Jaime",team:"Equipo A"},
+  11:{name:"Mario",team:"Equipo A"},
+  14:{name:"Zoe",team:"Equipo A"},
+  15:{name:"Mateo",team:"Equipo A"},
+  18:{name:"Rafa",team:"Equipo A"},
+  20:{name:"Romeo",team:"Equipo A"}
+};
+const PLAYER_KEY="voleibol_jugadores_v3";
+const RECORD_KEY="voleibol_registros_v3";
+const SET_KEY="voleibol_set_v3";
+
+let players={};
+try{
+ const saved=JSON.parse(localStorage.getItem(PLAYER_KEY)||"null");
+ if(saved&&typeof saved==="object"){
+  Object.keys(saved).forEach(j=>{
+   if(typeof saved[j]==="string") players[j]={name:saved[j],team:"Equipo A"};
+   else if(saved[j]&&typeof saved[j]==="object") players[j]={
+    name:saved[j].name||"",team:saved[j].team==="Equipo B"?"Equipo B":"Equipo A"
+   };
+  });
+ }
+}catch(e){}
+if(!Object.keys(players).length) players=JSON.parse(JSON.stringify(defaultPlayers));
+
+let records=[];
+try{
+ records=JSON.parse(localStorage.getItem(RECORD_KEY)||"[]");
+ if(!Array.isArray(records))records=[];
+}catch(e){records=[];}
+
+records=records.map(r=>{
+ if(r.rating==="--")r.rating="F";
+ if(r.rating==="Fallo")r.rating="F";
+ if(r.rating==="Neutra")r.rating="0";
+ if(!r.team)r.team=(players[r.jersey]?.team||"Equipo A");
+ return r;
+}).filter(r=>r.rating!=="0");
+
+let currentSet=Number(localStorage.getItem(SET_KEY)||1);
+if(!Number.isInteger(currentSet)||currentSet<1||currentSet>5)currentSet=1;
+let selectedAction="";
+let selectedRating="";
+let selectedTeam=localStorage.getItem("voleibol_equipo_v1")||"Equipo A";
+
+function save(){
+ localStorage.setItem(PLAYER_KEY,JSON.stringify(players));
+ localStorage.setItem(RECORD_KEY,JSON.stringify(records));
+ localStorage.setItem(SET_KEY,String(currentSet));
+ localStorage.setItem("voleibol_equipo_v1",selectedTeam);
+}
+
+function populatePlayers(){
+ const select=document.getElementById("player"),current=select.value;
+ select.innerHTML="";
+ const list=Object.keys(players)
+  .filter(j=>players[j].team===selectedTeam)
+  .sort((a,b)=>Number(a)-Number(b));
+ if(!list.length){
+  const o=document.createElement("option");o.value="";o.textContent="No hay jugadores en este equipo";
+  select.appendChild(o);
+ }else{
+  list.forEach(j=>{
+   const o=document.createElement("option");o.value=j;
+   o.textContent=`#${j} — ${players[j].name}`;
+   select.appendChild(o);
+  });
+  if([...select.options].some(o=>o.value===current))select.value=current;
+ }
+ renderTeamManager();
+}
+
+
+function selectSet(set){
+ currentSet=Number(set);
+ document.getElementById("currentSet").textContent=`SET ${currentSet}`;
+ document.querySelectorAll("#setButtons button").forEach(b=>
+  b.classList.toggle("selected",Number(b.dataset.set)===currentSet)
+ );
+ save();render();
+}
+document.querySelectorAll("#setButtons button").forEach(b=>b.onclick=()=>selectSet(b.dataset.set));
+
+document.getElementById("teamFilter").value=selectedTeam;
+document.getElementById("teamFilter").onchange=()=>{
+ selectedTeam=document.getElementById("teamFilter").value;
+ save();populatePlayers();
+};
+
+function selectButton(group,value){
+ document.querySelectorAll("#"+group+" button").forEach(b=>
+  b.classList.toggle("selected",b.dataset.value===value)
+ );
+}
+document.querySelectorAll("#actions button").forEach(b=>
+ b.onclick=()=>{selectedAction=b.dataset.value;selectButton("actions",selectedAction)}
+);
+document.querySelectorAll("#ratings button").forEach(b=>
+ b.onclick=()=>{selectedRating=b.dataset.value;selectButton("ratings",selectedRating)}
+);
+
+document.querySelectorAll(".section-toggle").forEach(btn=>{
+ btn.onclick=()=>{
+  const panel=document.getElementById(btn.dataset.target);
+  const open=panel.classList.toggle("open");
+  btn.classList.toggle("open",open);
+ };
+});
+
+document.getElementById("register").onclick=()=>{
+ const jersey=document.getElementById("player").value;
+ if(!jersey)return showStatus("Selecciona un jugador.",true);
+ if(!selectedAction)return showStatus("Selecciona una acción.",true);
+ if(!selectedRating)return showStatus("Selecciona un resultado.",true);
+
+ const existing=records.find(r=>
+  r.set===currentSet && r.jersey==jersey &&
+  r.action===selectedAction && r.rating===selectedRating
+ );
+ if(existing)existing.count++;
+ else records.push({
+  set:currentSet,jersey:Number(jersey),name:players[jersey].name,
+  team:players[jersey].team,action:selectedAction,rating:selectedRating,count:1
+ });
+ save();render();
+ showStatus(`✓ #${jersey} ${players[jersey].name} — ${selectedAction} (${labelRating(selectedRating)})`);
+};
+
+document.getElementById("addPlayer").onclick=()=>{
+ const jersey=document.getElementById("newJersey").value.trim();
+ const name=document.getElementById("newName").value.trim();
+ const team=document.getElementById("newTeam").value;
+ if(!jersey||!name){showAddStatus("Introduce dorsal y nombre.",true);return}
+ if(players[jersey]){showAddStatus("Ese dorsal ya está registrado.",true);return}
+ players[jersey]={name,team};
+ selectedTeam=team;
+ document.getElementById("teamFilter").value=team;
+ save();populatePlayers();
+ document.getElementById("player").value=jersey;
+ document.getElementById("newJersey").value="";
+ document.getElementById("newName").value="";
+ showAddStatus(`✓ #${jersey} ${name} añadido a ${team}.`);
+};
+
+function labelRating(r){
+ return r==="++"?"Doble positiva":r==="+"?"Positiva":r==="-"?"Negativa":"Fallo";
+}
+function showStatus(msg,error=false){
+ const e=document.getElementById("status");e.textContent=msg;
+ e.style.color=error?"#ff8d9d":"#63e59c";
+ setTimeout(()=>e.textContent="",2200);
+}
+function showAddStatus(msg,error=false){
+ const e=document.getElementById("addStatus");e.textContent=msg;
+ e.style.color=error?"#ff8d9d":"#63e59c";
+ setTimeout(()=>e.textContent="",2200);
+}
+function effectiveness(good,total){return total?Math.round(good/total*100):0}
+function ratingClass(r){return r==="+"||r==="++"?"pos":r==="-"||r==="F"?"neg":"neutral"}
+
+function render(){
+ document.getElementById("currentSet").textContent=`SET ${currentSet}`;
+ const setRecords=records.filter(r=>r.set===currentSet);
+ const tbody=document.getElementById("records");tbody.innerHTML="";
+ [...setRecords].sort((a,b)=>a.jersey-b.jersey).forEach(r=>{
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td>${r.jersey}</td><td>${escapeHtml(r.team||"")}</td>
+   <td>${r.action}</td><td><span class="badge ${ratingClass(r.rating)}">${labelRating(r.rating)}</span></td><td>${r.count}</td>`;
+  tbody.appendChild(tr);
+ });
+ const setTotal=setRecords.reduce((s,r)=>s+r.count,0);
+ const setGood=setRecords.filter(r=>r.rating==="+"||r.rating==="++").reduce((s,r)=>s+r.count,0);
+ document.getElementById("setPlayers").textContent=new Set(setRecords.map(r=>r.jersey)).size;
+ const setEff=effectiveness(setGood,setTotal);document.getElementById("setEffectiveness").textContent=setEff+"%";document.getElementById("setEffectBar").style.width=setEff+"%";
+
+ const matchTotal=records.reduce((s,r)=>s+r.count,0);
+ const matchGood=records.filter(r=>r.rating==="+"||r.rating==="++").reduce((s,r)=>s+r.count,0);
+ document.getElementById("matchPlayers").textContent=new Set(records.map(r=>r.jersey)).size;
+ const matchEff=effectiveness(matchGood,matchTotal);document.getElementById("matchEffectiveness").textContent=matchEff+"%";document.getElementById("matchEffectBar").style.width=matchEff+"%";
+
+ renderPlayerSummary();renderActionSummary();renderSetSummary();
+}
+
+function renderPlayerSummary(){
+ const map={};
+ records.forEach(r=>{
+  if(!map[r.jersey])map[r.jersey]={name:r.name,team:r.team||players[r.jersey]?.team||"",total:0,p:0,pp:0,n:0,f:0};
+  map[r.jersey].total+=r.count;
+  if(r.rating==="+")map[r.jersey].p+=r.count;
+  if(r.rating==="++")map[r.jersey].pp+=r.count;
+  if(r.rating==="-")map[r.jersey].n+=r.count;
+  if(r.rating==="F")map[r.jersey].f+=r.count;
+ });
+ const tbody=document.getElementById("playerSummary");tbody.innerHTML="";
+ Object.keys(map).sort((a,b)=>Number(a)-Number(b)).forEach(j=>{
+  const x=map[j],good=x.p+x.pp,tr=document.createElement("tr");
+  tr.innerHTML=`<td>${j}</td><td>${escapeHtml(x.team)}</td><td>${escapeHtml(x.name)}</td>
+   <td>${x.total}</td><td>${x.pp}</td><td>${x.p}</td><td>${x.n}</td><td>${x.f}</td>
+   <td class="effect-pill">${effectiveness(good,x.total)}%</td>`;
+  tbody.appendChild(tr);
+ });
+}
+
+function renderActionSummary(){
+ const actions=["Recepción","Colocación","Ataque","Bloqueo","Saque","Defensa"];
+ const tbody=document.getElementById("actionSummary");tbody.innerHTML="";
+ actions.forEach(action=>{
+  let p=0,pp=0,n=0,f=0;
+  records.filter(r=>r.action===action).forEach(r=>{
+   if(r.rating==="+")p+=r.count;
+   if(r.rating==="++")pp+=r.count;
+   if(r.rating==="-")n+=r.count;
+   if(r.rating==="F")f+=r.count;
+  });
+  const total=p+pp+n+f,tr=document.createElement("tr");
+  tr.innerHTML=`<td>${action}</td><td>${pp}</td><td>${p}</td><td>${n}</td><td>${f}</td>
+   <td>${total}</td><td class="effect-pill">${effectiveness(p+pp,total)}%</td>`;
+  tbody.appendChild(tr);
+ });
+}
+
+function renderSetSummary(){
+ const tbody=document.getElementById("setSummary");tbody.innerHTML="";
+ for(let s=1;s<=5;s++){
+  const rows=records.filter(r=>r.set===s);
+  const total=rows.reduce((a,r)=>a+r.count,0);
+  const good=rows.filter(r=>r.rating==="+"||r.rating==="++").reduce((a,r)=>a+r.count,0);
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td>Set ${s}</td>
+   <td class="effect-pill">${effectiveness(good,total)}%</td>`;
+  tbody.appendChild(tr);
+ }
+}
+
+function escapeHtml(x){
+ const d=document.createElement("div");d.textContent=x??"";return d.innerHTML;
+}
+
+document.getElementById("export").onclick=()=>{
+ if(!records.length){showStatus("No hay estadísticas para exportar.",true);return}
+ const rows=[["Set","Dorsal","Equipo","Jugador","Acción","Calificación","Cantidad"],
+  ...records.map(r=>[r.set,r.jersey,r.team||"",r.name,r.action,labelRating(r.rating),r.count])];
+ const csv=rows.map(row=>row.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");
+ const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="estadisticas_partido.csv";a.click();URL.revokeObjectURL(url);
+};
+
+document.getElementById("clear").onclick=()=>{
+ if(!confirm("¿Borrar TODAS las estadísticas del partido y empezar de 0?"))return;
+ records=[];currentSet=1;selectedAction="";selectedRating="";
+ try{
+  localStorage.removeItem(RECORD_KEY);localStorage.removeItem(SET_KEY);
+  localStorage.setItem(RECORD_KEY,"[]");localStorage.setItem(SET_KEY,"1");
+ }catch(e){console.warn(e)}
+ document.querySelectorAll("#actions button,#ratings button,#setButtons button").forEach(b=>b.classList.remove("selected"));
+ document.querySelector('#setButtons button[data-set="1"]').classList.add("selected");
+ document.getElementById("currentSet").textContent="SET 1";
+ document.querySelectorAll(".collapsible").forEach(p=>p.classList.remove("open"));
+ document.querySelectorAll(".section-toggle").forEach(b=>b.classList.remove("open"));
+ render();
+ try{
+  localStorage.setItem(PLAYER_KEY,JSON.stringify(players));
+  localStorage.setItem(RECORD_KEY,"[]");localStorage.setItem(SET_KEY,"1");
+ }catch(e){console.warn(e)}
+ showStatus("✓ Estadísticas reiniciadas.");
+};
+
+populatePlayers();
+document.getElementById("teamFilter").value=selectedTeam;
+selectSet(currentSet);
+</script>
+</body>
+</html>
