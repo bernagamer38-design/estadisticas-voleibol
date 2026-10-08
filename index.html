@@ -61,7 +61,7 @@ button.selected{background:linear-gradient(135deg,var(--blue),#6b65ff);border-co
 details{border-top:1px solid var(--line);margin-top:14px;padding-top:13px}
 summary{cursor:pointer;color:#cfe1f5;font-weight:800}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-.single-stat{grid-template-columns:minmax(180px,360px);justify-content:center}
+.single-stat{grid-template-columns:1fr}
 .metric{background:linear-gradient(145deg,#101f33,#0b1727);border:1px solid var(--line);
  border-radius:16px;padding:12px;text-align:center;color:var(--muted);font-size:11px}
 .metric b{display:block;color:#fff;font-size:25px;margin-bottom:2px}
@@ -83,6 +83,14 @@ td{color:#e4edf7}
 .badge.neg{background:rgba(255,100,124,.12);color:#ff8d9d}
 .badge.neutral{background:rgba(255,209,102,.12);color:#ffd166}
 .effect-pill{font-weight:900;color:#6ee7aa}
+.effect-card{width:100%;padding:16px 18px;position:relative;overflow:hidden}
+.effect-card .effect-label{display:flex;justify-content:space-between;align-items:center;
+ color:#aecaeb;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px}
+.effect-card .effect-value{font-size:36px;font-weight:900;color:#fff;line-height:1;margin-top:7px}
+.effect-track{height:10px;border-radius:999px;background:#091626;border:1px solid var(--line);
+ overflow:hidden;margin-top:13px}
+.effect-bar{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#4f8cff,#39d5ff,#28d17c);
+ transition:width .35s ease}
 .action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
 .action-grid button{font-size:13px}
 .team-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
@@ -96,7 +104,7 @@ td{color:#e4edf7}
  .action-grid,#actions,#ratings{grid-template-columns:repeat(2,minmax(0,1fr))}
  .action-grid button:last-child{grid-column:1/-1}
  .stats{grid-template-columns:repeat(3,1fr)}
- #actions button,#ratings button{min-height:58px;padding:10px 7px;font-size:13px}
+ #actions button,#ratings button{min-height:58px;padding:10px 4px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
  #register,#clear,#export{width:100%;min-height:54px}
 }
 @media(max-width:350px){.stats{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}}
@@ -173,7 +181,7 @@ td{color:#e4edf7}
 <section class="card">
  <h2>📈 Resumen del set</h2>
  <div class="stats">
-    <div class="metric"><b id="setEffectiveness" class="effect">0%</b>Efectividad</div>
+    <div class="metric effect-card"><div class="effect-label"><span>Efectividad del set</span><span>0–100%</span></div><b id="setEffectiveness" class="effect effect-value">0%</b><div class="effect-track"><div class="effect-bar" id="setEffectBar"></div></div></div>
  </div>
  <button class="section-toggle" data-target="setRecordsPanel">
   <span>📋 Ver acciones del set</span><span class="arrow">⌄</span>
@@ -191,7 +199,7 @@ td{color:#e4edf7}
 <section class="card">
  <h2>🏆 Estadísticas del partido</h2>
  <div class="stats">
-    <div class="metric"><b id="matchEffectiveness" class="effect">0%</b>Efectividad</div>
+    <div class="metric effect-card"><div class="effect-label"><span>Efectividad del partido</span><span>0–100%</span></div><b id="matchEffectiveness" class="effect effect-value">0%</b><div class="effect-track"><div class="effect-bar" id="matchEffectBar"></div></div></div>
  </div>
 
  <button class="section-toggle" data-target="playerPanel">
@@ -419,12 +427,12 @@ function render(){
  const setTotal=setRecords.reduce((s,r)=>s+r.count,0);
  const setGood=setRecords.filter(r=>r.rating==="+"||r.rating==="++").reduce((s,r)=>s+r.count,0);
  document.getElementById("setPlayers").textContent=new Set(setRecords.map(r=>r.jersey)).size;
- document.getElementById("setEffectiveness").textContent=effectiveness(setGood,setTotal)+"%";
+ const setEff=effectiveness(setGood,setTotal);document.getElementById("setEffectiveness").textContent=setEff+"%";document.getElementById("setEffectBar").style.width=setEff+"%";
 
  const matchTotal=records.reduce((s,r)=>s+r.count,0);
  const matchGood=records.filter(r=>r.rating==="+"||r.rating==="++").reduce((s,r)=>s+r.count,0);
  document.getElementById("matchPlayers").textContent=new Set(records.map(r=>r.jersey)).size;
- document.getElementById("matchEffectiveness").textContent=effectiveness(matchGood,matchTotal)+"%";
+ const matchEff=effectiveness(matchGood,matchTotal);document.getElementById("matchEffectiveness").textContent=matchEff+"%";document.getElementById("matchEffectBar").style.width=matchEff+"%";
 
  renderPlayerSummary();renderActionSummary();renderSetSummary();
 }
