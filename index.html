@@ -188,11 +188,6 @@ table {
 </style>
 </head>
 <body>
-<div id="iphoneTip" style="
-  margin:12px auto 0;max-width:900px;padding:12px 14px;border-radius:16px;
-  background:rgba(59,130,246,.12);border:1px solid rgba(96,165,250,.25);
-  color:#dbeafe;font-size:14px;line-height:1.35;text-align:center;">
-  📱 <strong>iPhone:</strong> diseño optimizado para tocar, deslizar tablas y usar Safari sin zoom.
 </div>
 
 <div class="app">
@@ -200,7 +195,6 @@ table {
 <header class="hero">
   <div class="logo">🏐</div>
   <h1>Estadísticas de Voleibol</h1>
-  <div class="sub">Control visual y rápido del partido</div>
 </header>
 
 <section class="card">
@@ -211,7 +205,6 @@ table {
     <button data-set="3">SET 3</button><button data-set="4">SET 4</button>
     <button data-set="5">SET 5</button>
   </div>
-  <p class="small">Elige el set antes de registrar una acción.</p>
 </section>
 
 <section class="card">
@@ -274,7 +267,6 @@ table {
 
 <section class="card">
   <h2>🏆 Estadísticas del partido</h2>
-  <p class="small">Las estadísticas completas están ocultas para que la pantalla principal quede limpia. Pulsa un botón para abrir cada apartado.</p>
 
   <div class="stats">
     <div class="metric"><b id="matchTotal">0</b>Acciones</div>
@@ -323,14 +315,13 @@ table {
 
 <section class="card">
   <h2>⚙️ Datos</h2>
-  <button class="secondary danger" id="clear">🗑️ Reiniciar estadísticas del partido</button>
-  <div class="footer-note">Los jugadores personalizados no se borran.</div>
+  <button class="secondary danger" id="clear">🗑️ Reiniciar estadísticas del partido</button>  
 </section>
 
 </div>
 
 <script>
-const defaultPlayers={1:"Cristian",4:"Abde",6:"Erik",8:"Arthur",9:"Berna",10:"Jaime",11:"Mario",14:"Zoe",18:"Rafa",20:"Romeo"};
+const defaultPlayers={1:"Cristian",4:"Abde",6:"Erik",8:"Arthur",9:"Berna",10:"Jaime",11:"Mario",14:"Zoe",15:"Mateo",18:"Rafa",20:"Romeo"};
 const PLAYER_KEY="voleibol_jugadores_v3";
 const RECORD_KEY="voleibol_registros_v3";
 const SET_KEY="voleibol_set_v3";
